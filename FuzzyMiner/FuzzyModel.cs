@@ -724,7 +724,8 @@ namespace FuzzyMinerModel
         private List<FuzzyEdge> inEdges;
         private List<FuzzyEdge> outEdges;
         private int frequencySignificance;
-        private Dictionary<string, string> attributes = new Dictionary<string, string>();
+        private Dictionary<string, List<string>> attributes = new Dictionary<string, List<string>>();
+        private Dictionary<string, List<string>> significantAttributes = new Dictionary<string, List<string>>();
 
         public FuzzyNode(string label)
         {
@@ -754,9 +755,14 @@ namespace FuzzyMinerModel
             return frequencySignificance;
         }
 
-        public Dictionary<string, string> GetAttributes()
+        public Dictionary<string, List<string>> GetAttributes()
         {
             return attributes;
+        }
+
+        public Dictionary<string, List<string>> GetSignificantAttributes()
+        {
+            return significantAttributes;
         }
 
         public void AddInEdges(FuzzyEdge inEdge)
@@ -771,7 +777,28 @@ namespace FuzzyMinerModel
 
         public void AddAttribute(string key, string value)
         {
-            attributes.Add(key, value);
+            if (attributes.Keys.Contains<string>(key))
+            {
+                attributes[key].Add(value);
+            }
+            else
+            {
+                attributes.Add(key, new List<string>());
+                attributes[key].Add(value);
+            }
+        }
+
+        public void AddSignificantAttribute(string key, string value)
+        {
+            if (significantAttributes.Keys.Contains<string>(key))
+            {
+                significantAttributes[key].Add(value);
+            }
+            else
+            {
+                significantAttributes.Add(key, new List<string>());
+                significantAttributes[key].Add(value);
+            }
         }
 
         public void SetFrequencySignificance(int x)
@@ -879,8 +906,11 @@ namespace FuzzyMinerModel
             this.fromNode = from;
             this.toNode = to;
             ComputeEndpointCorrelation();
-            ComputeProximityCorrelation();
-            if (fromNode.GetAttributes().Keys.Contains<string>("org:resource"))
+            if (fromNode.GetAttributes().Keys.Contains<string>("time:timestamp") && toNode.GetAttributes().Keys.Contains<string>("time:timestamp"))
+            {
+                ComputeProximityCorrelation();
+            }
+            if (fromNode.GetAttributes().Keys.Contains<string>("org:resource") && toNode.GetAttributes().Keys.Contains<string>("org:resource"))
             {
                 ComputeOriginatorCorrelation();
             }
@@ -939,6 +969,7 @@ namespace FuzzyMinerModel
             endpointCorrelation = ((maxLength - stringDistance) / maxLength);
         }
 
+        // TODO con quale timestamp si calcola?
         public void ComputeProximityCorrelation()
         {
             DateTime fromDate = new DateTime();
@@ -949,16 +980,16 @@ namespace FuzzyMinerModel
                 DateTime max = new DateTime();
                 foreach (FuzzyNode fn in fcn.GetNodesInCluster())
                 {
-                    if (Convert.ToDateTime(fn.GetAttributes()["time:timestamp"]) > max)
+                    if (Convert.ToDateTime(fn.GetAttributes()["time:timestamp"][0]) > max)
                     {
-                        max = Convert.ToDateTime(fn.GetAttributes()["time:timestamp"]);
+                        max = Convert.ToDateTime(fn.GetAttributes()["time:timestamp"][0]);
                     }
                 }
                 fromDate = max;
             }
             else
             {
-                fromDate = Convert.ToDateTime(fromNode.GetAttributes()["time:timestamp"]);
+                fromDate = Convert.ToDateTime(fromNode.GetAttributes()["time:timestamp"][0]);
             }
             if (toNode is FuzzyNodeCluster)
             {
@@ -966,16 +997,16 @@ namespace FuzzyMinerModel
                 DateTime min = new DateTime();
                 foreach (FuzzyNode fn in fcn.GetNodesInCluster())
                 {
-                    if (Convert.ToDateTime(fn.GetAttributes()["time:timestamp"]) < min)
+                    if (Convert.ToDateTime(fn.GetAttributes()["time:timestamp"][0]) < min)
                     {
-                        min = Convert.ToDateTime(fn.GetAttributes()["time:timestamp"]);
+                        min = Convert.ToDateTime(fn.GetAttributes()["time:timestamp"][0]);
                     }
                 }
                 fromDate = min;
             }
             else
             {
-                toDate = Convert.ToDateTime(toNode.GetAttributes()["time:timestamp"]);
+                toDate = Convert.ToDateTime(toNode.GetAttributes()["time:timestamp"][0]);
             }
             if ((fromDate != null) && (toDate != null))
             {
@@ -996,10 +1027,11 @@ namespace FuzzyMinerModel
             }
         }
 
+        // TODO con quale valore tra le risorse si calcola?
         public void ComputeOriginatorCorrelation()
         {
-            String fromOriginator = fromNode.GetAttributes()["org:resource"];
-            String toOriginator = toNode.GetAttributes()["org:resource"];
+            String fromOriginator = fromNode.GetAttributes()["org:resource"][0];
+            String toOriginator = toNode.GetAttributes()["org:resource"][0];
             if ((fromOriginator == null) || (toNode == null))
             {
                 originatorCorrelation = 0.0F;

@@ -27,6 +27,7 @@ namespace IO
                     sw.WriteLine("{");
                     sw.WriteLine("  \"FuzzyModel\" : {");
 
+                    Console.WriteLine("Printing nodes...");
                     sw.WriteLine("      \"nodes\": [");
                     foreach (FuzzyNode fn in fm.GetNodes())
                     {
@@ -35,19 +36,37 @@ namespace IO
                         sw.WriteLine("              \"frequencySignificance\" : " + fn.GetFrequencySignificance() + ",");
                         sw.WriteLine("              \"attributes\" : [");
                         sw.WriteLine("                  {");
-                        foreach (string s in fn.GetAttributes().Keys)
+                        foreach (string s in fn.GetSignificantAttributes().Keys)
                         {
-                            if (s == fn.GetAttributes().Keys.Last<string>())
+                            Dictionary<string, double> attributesValues = ComputeOverallAttribute(s, fn.GetSignificantAttributes()[s]);
+                            if (attributesValues.Keys.Count != 0)
                             {
-                                sw.WriteLine("                      \"" + s + "\" : \"" + fn.GetAttributes()[s] + "\"");
-                                sw.WriteLine("                      }");
-                                sw.WriteLine("                   ]");
-                            }
-                            else
-                            {
-                                sw.WriteLine("                      \"" + s + "\" : \"" + fn.GetAttributes()[s] + "\",");
+                                sw.WriteLine("                      \"" + s + "\" : [");
+                                sw.WriteLine("                          {");
+                                foreach (string key in attributesValues.Keys)
+                                {
+                                    if (key.Equals(attributesValues.Keys.Last<string>()))
+                                    {
+                                        sw.WriteLine("                          \"" + key + "\" : \"" + attributesValues[key] + "\"");
+                                        sw.WriteLine("                          }");
+                                        if (s.Equals(fn.GetSignificantAttributes().Keys.Last<string>()))
+                                        {
+                                            sw.WriteLine("                      ]");
+                                        }
+                                        else
+                                        {
+                                            sw.WriteLine("                      ],");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        sw.WriteLine("                          \"" + key + "\" : \"" + attributesValues[key] + "\",");
+                                    }
+                                }
                             }
                         }
+                        sw.WriteLine("                      }");
+                        sw.WriteLine("                   ]");
                         if (fn == fm.GetNodes().Last<FuzzyNode>())
                         {
                             sw.WriteLine("          }");
@@ -58,6 +77,8 @@ namespace IO
                         }
                     }
                     sw.WriteLine("      ],");
+
+                    Console.WriteLine("Printing edges...");
                     sw.WriteLine("      \"edges\": [");
                     foreach (FuzzyEdge fe in fm.GetEdges())
                     {
@@ -85,6 +106,43 @@ namespace IO
             {
                 Console.WriteLine(Ex.ToString());
             }
+        }
+
+        public static Dictionary<string, double> ComputeOverallAttribute(string attribute, List<string> attributeValues)
+        {
+            Console.WriteLine("Computing overall attribute");
+            Dictionary<string, double> overallAttributes = new Dictionary<string, double>();
+            var isNumeric = double.TryParse(attributeValues[0], out double n);
+            if (isNumeric)
+            {
+                double totalValue = 0;
+                foreach (string s in attributeValues)
+                {
+                    totalValue += Convert.ToDouble(s);
+                }
+                double meanValue = totalValue / attributeValues.Count;
+                overallAttributes.Add("Total", totalValue);
+                overallAttributes.Add("Arithmetic mean", meanValue);
+            }
+            else
+            {
+                if (!attribute.Equals("time:timestamp") && !attribute.Equals("EventID") && !attribute.Equals("OfferID"))
+                {
+                    foreach (string s in attributeValues)
+                    {
+                        if (overallAttributes.Keys.Contains<string>(s))
+                        {
+                            overallAttributes[s] += 1;
+                        }
+                        else
+                        {
+                            overallAttributes.Add(s, 1);
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("Returning overall attribute");
+            return overallAttributes;
         }
     }
 }

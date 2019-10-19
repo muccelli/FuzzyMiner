@@ -49,14 +49,21 @@ namespace FuzzyMiner
             {
                 fm = LogManager.parseLogFile(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName + System.IO.Path.DirectorySeparatorChar + "Input" + System.IO.Path.DirectorySeparatorChar + inputFile);
             }
-            foreach (FuzzyNode fn in fm.GetNodes())
-            {
-                for (int i = 0; i < fn.GetAttributes().Count; i++)
-                {
-                    Console.WriteLine("Key = {0}, Value = {1}", fn.GetAttributes().ElementAt(i).Key, fn.GetAttributes().ElementAt(i).Value);
-                }
-                Console.WriteLine();
-            }
+
+            // Print the attributes
+            //foreach (FuzzyNode fn in fm.GetNodes())
+            //{
+            //    Console.WriteLine(fn.GetLabel());
+            //    for (int i = 0; i < fn.GetAttributes().Count; i++)
+            //    {
+            //        Console.WriteLine("Key = {0}, Value = {1}", fn.GetAttributes().ElementAt(i).Key, fn.GetAttributes().ElementAt(i).Value[0]);
+            //        for (int j = 1; j < 5; j++)
+            //        {
+            //            Console.WriteLine("                        {0}", fn.GetAttributes().ElementAt(i).Value[j]);
+            //        }
+            //    }
+            //    Console.WriteLine();
+            //}
 
             Console.WriteLine("Number of edges: {0}", fm.GetEdges().Count);
             Console.WriteLine("Number of nodes: {0}", fm.GetNodes().Count);
@@ -117,6 +124,7 @@ namespace FuzzyMiner
                 }
             }
             // Export xml
+            Console.WriteLine("Preparing JSON file...");
             Exporter.ExportToJSON(fm, Path.GetFileNameWithoutExtension(inputFile));
             
         }

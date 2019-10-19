@@ -38,13 +38,6 @@ namespace IO
                     {
                         FuzzyNode node = new FuzzyNode(currentEvent);
                         fm.AddNode(node);
-                        foreach (string key in xam.Keys)
-                        {
-                            if (key != "concept:name")
-                            {
-                                node.AddAttribute(key, xam[key].ToString());
-                            }
-                        }
 
                         // if it is not the first event in the trace, add edges
                         if (previousEvent != null)
@@ -71,6 +64,17 @@ namespace IO
                         }
                     }
 
+                    foreach (string key in xam.Keys)
+                    {
+                        if (key != "concept:name" && key != "lifecycle:transition")
+                        {
+                            if (key != "time:timestamp" && key.IndexOf("id", StringComparison.OrdinalIgnoreCase) < 0)
+                            {
+                                fm.GetNode(currentEvent).AddSignificantAttribute(key, xam[key].ToString());
+                            }
+                            fm.GetNode(currentEvent).AddAttribute(key, xam[key].ToString());
+                        }
+                    }
                     fm.GetNode(currentEvent).IncreaseFrequencySignificance();
                     previousEvent = currentEvent;
                 }
