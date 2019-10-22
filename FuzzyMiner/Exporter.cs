@@ -122,7 +122,7 @@ namespace IO
                 }
                 double meanValue = totalValue / attributeValues.Count;
                 overallAttributes.Add("Total", totalValue);
-                overallAttributes.Add("Arithmetic mean", meanValue);
+                overallAttributes.Add("Arithmetic_Mean", meanValue);
             }
             else
             {

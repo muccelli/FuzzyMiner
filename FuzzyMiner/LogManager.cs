@@ -18,6 +18,17 @@ namespace IO
 
             foreach (XTrace xt in traces)
             {
+                //XAttributeMap xamRoot = (XAttributeMap)xt[0].GetAttributes();
+                //string traceRoot;
+                //if (xamRoot.Keys.Contains<string>("lifecycle:transition"))
+                //{
+                //    traceRoot = xamRoot["concept:name"].ToString() + " : " + xamRoot["lifecycle:transition"].ToString();
+                //}
+                //else
+                //{
+                //    traceRoot = xamRoot["concept:name"].ToString();
+                //}
+
                 string previousEvent = null;
                 foreach (XEvent xe in xt)
                 {
