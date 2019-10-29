@@ -723,6 +723,7 @@ namespace FuzzyMinerModel
         private string label;
         private List<FuzzyEdge> inEdges;
         private List<FuzzyEdge> outEdges;
+        private List<float> durationsList;
         private int frequencySignificance;
         private Dictionary<string, List<string>> attributes = new Dictionary<string, List<string>>();
         private Dictionary<string, List<string>> significantAttributes = new Dictionary<string, List<string>>();
@@ -732,6 +733,7 @@ namespace FuzzyMinerModel
             this.label = label;
             inEdges = new List<FuzzyEdge>();
             outEdges = new List<FuzzyEdge>();
+            this.durationsList = new List<float>();
             frequencySignificance = 0;
         }
 
@@ -748,6 +750,16 @@ namespace FuzzyMinerModel
         public List<FuzzyEdge> GetOutEdges()
         {
             return outEdges;
+        }
+
+        public List<float> GetDurationsList()
+        {
+            return durationsList;
+        }
+
+        public void AddDuration(float d)
+        {
+            durationsList.Add(d);
         }
 
         public int GetFrequencySignificance()
@@ -896,6 +908,7 @@ namespace FuzzyMinerModel
     {
         private FuzzyNode fromNode;
         private FuzzyNode toNode;
+        private List<float> durationsList;
         private int frequencySignificance;
         private float endpointCorrelation;
         private float proximityCorrelation;
@@ -905,6 +918,7 @@ namespace FuzzyMinerModel
         {
             this.fromNode = from;
             this.toNode = to;
+            this.durationsList = new List<float>();
             ComputeEndpointCorrelation();
             if (fromNode.GetAttributes().Keys.Contains<string>("time:timestamp") && toNode.GetAttributes().Keys.Contains<string>("time:timestamp"))
             {
@@ -924,6 +938,16 @@ namespace FuzzyMinerModel
         public FuzzyNode GetToNode()
         {
             return toNode;
+        }
+
+        public List<float> GetDurationsList()
+        {
+            return durationsList;
+        }
+
+        public void AddDuration(float d)
+        {
+            durationsList.Add(d);
         }
 
         public int GetFrequencySignificance()

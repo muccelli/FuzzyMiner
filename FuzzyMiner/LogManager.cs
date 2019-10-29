@@ -16,34 +16,36 @@ namespace IO
             FuzzyModel fm = new FuzzyModel();
             List<XTrace> traces = getTracesXES(file);
 
+            string root = "start";
+            fm.AddNode(root);
+
             foreach (XTrace xt in traces)
             {
-                //XAttributeMap xamRoot = (XAttributeMap)xt[0].GetAttributes();
-                //string traceRoot;
-                //if (xamRoot.Keys.Contains<string>("lifecycle:transition"))
-                //{
-                //    traceRoot = xamRoot["concept:name"].ToString() + " : " + xamRoot["lifecycle:transition"].ToString();
-                //}
-                //else
-                //{
-                //    traceRoot = xamRoot["concept:name"].ToString();
-                //}
-
-                string previousEvent = null;
+                fm.GetNode(root).IncreaseFrequencySignificance();
+                string previousEvent = root;
+                string previousState = "";
+                float eventDuration = 0;
+                long previousTime = 0;
                 foreach (XEvent xe in xt)
                 {
                     // find event name
                     XAttributeMap xam = (XAttributeMap)xe.GetAttributes();
                     string currentEvent;
-                    if (xam.Keys.Contains<string>("lifecycle:transition"))
+                    string currentState = xam["lifecycle:transition"].ToString();                    
+                    long currentTime = 0;
+                    if (xam.Keys.Contains<string>("time:timestamp"))
                     {
-                        currentEvent = xam["concept:name"].ToString() + " : " + xam["lifecycle:transition"].ToString();
+                        currentTime = Convert.ToDateTime(xam["time:timestamp"].ToString()).Ticks;
                     }
-                    else
-                    {
+                    //if (xam.Keys.Contains<string>("lifecycle:transition"))
+                    //{
+                    //    currentEvent = xam["concept:name"].ToString() + " : " + xam["lifecycle:transition"].ToString();
+                    //}
+                    //else
+                    //{
                         currentEvent = xam["concept:name"].ToString();
-                    }
-                    
+                    //}
+
                     // if the event is new, add it to the graph
                     if (!fm.GetEvents().Contains(currentEvent))
                     {
@@ -58,23 +60,46 @@ namespace IO
                             if (!fm.GetNode(previousEvent).GetOutEdges().Contains(e))
                             {
                                 fm.AddEdge(e);
+                            }  
+                            // if it's not the start node, compute the duration of the transition
+                            if (previousEvent != "start")
+                            {
+                                fm.GetEdge(e).AddDuration(currentTime - previousTime);
                             }
                             fm.GetEdge(e).IncreaseFrequencySignificance();
                         }
                     }
                     else
                     {
+                        // if it is not the first event in the trace, add edges
                         if (previousEvent != null)
                         {
                             FuzzyEdge e = new FuzzyEdge(fm.GetNode(previousEvent), fm.GetNode(currentEvent));
+                            // if the edge is new add it to the list
                             if (!fm.GetNode(previousEvent).GetOutEdges().Contains(e))
                             {
                                 fm.AddEdge(e);
                             }
+                            // if it's not the start node, compute the duration of the transition
+                            if (previousEvent != "start")
+                            {
+                                fm.GetEdge(e).AddDuration(currentTime - previousTime);
+                            }
                             fm.GetEdge(e).IncreaseFrequencySignificance();
                         }
+                        // if the event is the same but the state is different, compute the event duration
+                        if (previousEvent == currentEvent && previousState != currentState)
+                        {
+                            eventDuration += currentTime - previousTime;
+                        }
                     }
-
+                    // if the event is complete add its duration to the node
+                    if (currentState == "complete")
+                    {
+                        fm.GetNode(currentEvent).AddDuration(eventDuration);
+                        eventDuration = 0;
+                    }
+                    // add the event attributes to the node
                     foreach (string key in xam.Keys)
                     {
                         if (key != "concept:name" && key != "lifecycle:transition")
@@ -88,7 +113,10 @@ namespace IO
                     }
                     fm.GetNode(currentEvent).IncreaseFrequencySignificance();
                     previousEvent = currentEvent;
+                    previousState = currentState;
+                    previousTime = currentTime;
                 }
+                //TODO Add end node
             }
             return fm;
         }
