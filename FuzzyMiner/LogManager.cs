@@ -68,6 +68,7 @@ namespace IO
                             }
                             fm.GetEdge(e).IncreaseFrequencySignificance();
                         }
+                        fm.GetNode(currentEvent).IncreaseFrequencySignificance();
                     }
                     else
                     {
@@ -92,6 +93,10 @@ namespace IO
                         {
                             eventDuration += currentTime - previousTime;
                         }
+                        else
+                        {
+                            fm.GetNode(currentEvent).IncreaseFrequencySignificance();
+                        }
                     }
                     // if the event is complete add its duration to the node
                     if (currentState == "complete")
@@ -111,7 +116,6 @@ namespace IO
                             fm.GetNode(currentEvent).AddAttribute(key, xam[key].ToString());
                         }
                     }
-                    fm.GetNode(currentEvent).IncreaseFrequencySignificance();
                     previousEvent = currentEvent;
                     previousState = currentState;
                     previousTime = currentTime;
