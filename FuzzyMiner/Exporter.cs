@@ -143,7 +143,16 @@ namespace IO
         {
             Console.WriteLine("Computing overall attribute");
             Dictionary<string, double> overallAttributes = new Dictionary<string, double>();
-            var isNumeric = double.TryParse(attributeValues[0], out double n);
+            var isNumeric = true;
+            foreach (string s in attributeValues)
+            {
+                if (!double.TryParse(s, out double n))
+                {
+                    isNumeric = false;
+                    break;
+                }
+            }
+            
             if (isNumeric)
             {
                 double totalValue = 0;
