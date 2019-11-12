@@ -723,7 +723,7 @@ namespace FuzzyMinerModel
         private string label;
         private List<FuzzyEdge> inEdges;
         private List<FuzzyEdge> outEdges;
-        private List<float> durationsList;
+        private List<double> durationsList;
         private int frequencySignificance;
         private Dictionary<string, List<string>> attributes = new Dictionary<string, List<string>>();
         private Dictionary<string, List<string>> significantAttributes = new Dictionary<string, List<string>>();
@@ -733,7 +733,7 @@ namespace FuzzyMinerModel
             this.label = label;
             inEdges = new List<FuzzyEdge>();
             outEdges = new List<FuzzyEdge>();
-            this.durationsList = new List<float>();
+            this.durationsList = new List<double>();
             frequencySignificance = 0;
         }
 
@@ -752,12 +752,12 @@ namespace FuzzyMinerModel
             return outEdges;
         }
 
-        public List<float> GetDurationsList()
+        public List<double> GetDurationsList()
         {
             return durationsList;
         }
 
-        public void AddDuration(float d)
+        public void AddDuration(double d)
         {
             durationsList.Add(d);
         }
@@ -908,7 +908,7 @@ namespace FuzzyMinerModel
     {
         private FuzzyNode fromNode;
         private FuzzyNode toNode;
-        private List<float> durationsList;
+        private List<double> durationsList;
         private int frequencySignificance;
         private float endpointCorrelation;
         private float proximityCorrelation;
@@ -918,7 +918,7 @@ namespace FuzzyMinerModel
         {
             this.fromNode = from;
             this.toNode = to;
-            this.durationsList = new List<float>();
+            this.durationsList = new List<double>();
             ComputeEndpointCorrelation();
             if (fromNode.GetAttributes().Keys.Contains<string>("time:timestamp") && toNode.GetAttributes().Keys.Contains<string>("time:timestamp"))
             {
@@ -940,12 +940,12 @@ namespace FuzzyMinerModel
             return toNode;
         }
 
-        public List<float> GetDurationsList()
+        public List<double> GetDurationsList()
         {
             return durationsList;
         }
 
-        public void AddDuration(float d)
+        public void AddDuration(double d)
         {
             durationsList.Add(d);
         }

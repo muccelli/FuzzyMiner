@@ -38,7 +38,7 @@ namespace IO
                         {
                             sw.WriteLine("              \"durations\" : [");
                             sw.WriteLine("                  {");
-                            Dictionary<string, float> durations = ComputeDurations(fn);
+                            Dictionary<string, double> durations = ComputeDurations(fn);
                             sw.WriteLine("                      \"TotalDuration\" : " + durations["TotalDuration"].ToString().Replace(",", ".") + ",");
                             sw.WriteLine("                      \"MeanDuration\" : " + durations["MeanDuration"].ToString().Replace(",", ".") + ",");
                             sw.WriteLine("                      \"MinDuration\" : " + durations["MinDuration"].ToString().Replace(",", ".") + ",");
@@ -104,7 +104,7 @@ namespace IO
                             sw.WriteLine("              \"frequencySignificance\" : " + fe.GetFrequencySignificance() + ",");
                             sw.WriteLine("              \"durations\" : [");
                             sw.WriteLine("                  {");
-                            Dictionary<string, float> durations = ComputeDurations(fe);
+                            Dictionary<string, double> durations = ComputeDurations(fe);
                             sw.WriteLine("                      \"TotalDuration\" : " + durations["TotalDuration"].ToString().Replace(",",".") + ",");
                             sw.WriteLine("                      \"MeanDuration\" : " + durations["MeanDuration"].ToString().Replace(",", ".") + ",");
                             sw.WriteLine("                      \"MinDuration\" : " + durations["MinDuration"].ToString().Replace(",", ".") + ",");
@@ -188,18 +188,18 @@ namespace IO
             return overallAttributes;
         }
 
-        public static Dictionary<string, float> ComputeDurations(FuzzyEdge fe)
+        public static Dictionary<string, double> ComputeDurations(FuzzyEdge fe)
         {
-            Dictionary<string, float> durations = new Dictionary<string, float>();
-            List<float> edgeDurations = fe.GetDurationsList();
-            float totalDuration = 0;
-            foreach (float f in edgeDurations)
+            Dictionary<string, double> durations = new Dictionary<string, double>();
+            List<double> edgeDurations = fe.GetDurationsList();
+            double totalDuration = 0;
+            foreach (double f in edgeDurations)
             {
                 totalDuration += f;
             }
-            float meanDuration = totalDuration / edgeDurations.Count;
-            float minDuration = edgeDurations.Min();
-            float maxDuration = edgeDurations.Max();
+            double meanDuration = totalDuration / edgeDurations.Count;
+            double minDuration = edgeDurations.Min();
+            double maxDuration = edgeDurations.Max();
 
             durations.Add("TotalDuration", totalDuration);
             durations.Add("MeanDuration", meanDuration);
@@ -209,20 +209,20 @@ namespace IO
             return durations;
         }
 
-        public static Dictionary<string, float> ComputeDurations(FuzzyNode fn)
+        public static Dictionary<string, double> ComputeDurations(FuzzyNode fn)
         {
-            Dictionary<string, float> durations = new Dictionary<string, float>();
-            List<float> nodeDurations = fn.GetDurationsList();
+            Dictionary<string, double> durations = new Dictionary<string, double>();
+            List<double> nodeDurations = fn.GetDurationsList();
             if (nodeDurations.Count > 0)
             {
-                float totalDuration = 0;
-                foreach (float f in nodeDurations)
+                double totalDuration = 0;
+                foreach (double f in nodeDurations)
                 {
                     totalDuration += f;
                 }
-                float meanDuration = totalDuration / nodeDurations.Count;
-                float minDuration = nodeDurations.Min();
-                float maxDuration = nodeDurations.Max();
+                double meanDuration = totalDuration / nodeDurations.Count;
+                double minDuration = nodeDurations.Min();
+                double maxDuration = nodeDurations.Max();
 
                 durations.Add("TotalDuration", totalDuration);
                 durations.Add("MeanDuration", meanDuration);

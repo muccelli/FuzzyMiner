@@ -24,18 +24,18 @@ namespace IO
                 fm.GetNode(root).IncreaseFrequencySignificance();
                 string previousEvent = root;
                 string previousState = "";
-                float eventDuration = 0;
-                long previousTime = 0;
+                double eventDuration = 0;
+                double previousTime = 0;
                 foreach (XEvent xe in xt)
                 {
                     // find event name
                     XAttributeMap xam = (XAttributeMap)xe.GetAttributes();
                     string currentEvent;
                     string currentState = xam["lifecycle:transition"].ToString();                    
-                    long currentTime = 0;
+                    double currentTime = 0;
                     if (xam.Keys.Contains<string>("time:timestamp"))
                     {
-                        currentTime = Convert.ToDateTime(xam["time:timestamp"].ToString()).Ticks;
+                        currentTime = Convert.ToDateTime(xam["time:timestamp"].ToString()).ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
                     }
                     //if (xam.Keys.Contains<string>("lifecycle:transition"))
                     //{
