@@ -35,8 +35,9 @@
     <Reference Include="Microsoft.Msagl">
       <HintPath>..\..\..\..\Desktop\Marco\Università\Master Thesis\automatic-graph-layout-master\GraphLayout\MSAGL\bin\Release\Microsoft.Msagl.dll</HintPath>
     </Reference>
-    <Reference Include="OpenXes.Net">
-      <HintPath>..\..\..\..\Desktop\Marco\Università\Master Thesis\sabien-openxes.net-25de7d39cd4c\OpenXes.Net\bin\Release\netstandard2.0\OpenXes.Net.dll</HintPath>
+    <Reference Include="OpenXes.Net, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\OpenXes.Net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
