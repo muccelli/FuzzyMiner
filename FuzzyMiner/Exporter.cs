@@ -34,7 +34,7 @@ namespace IO
                         sw.WriteLine("           {");
                         sw.WriteLine("              \"label\" : \"" + fn.GetLabel() + "\",");
                         sw.WriteLine("              \"frequencySignificance\" : " + fn.GetFrequencySignificance() + ",");
-                        if (fn.GetLabel() != "start")
+                        if (fn.GetLabel() != "start_node" && fn.GetLabel() != "end_node")
                         {
                             sw.WriteLine("              \"durations\" : [");
                             sw.WriteLine("                  {");
@@ -99,7 +99,7 @@ namespace IO
                         sw.WriteLine("              \"fromNode\" : \"" + fe.GetFromNode().GetLabel() + "\",");
                         sw.WriteLine("              \"toNode\" : \"" + fe.GetToNode().GetLabel() + "\",");
 
-                        if (fe.GetFromNode().GetLabel() != "start")
+                        if (fe.GetFromNode().GetLabel() != "start_node" && fe.GetToNode().GetLabel() != "end_node")
                         {
                             sw.WriteLine("              \"frequencySignificance\" : " + fe.GetFrequencySignificance() + ",");
                             sw.WriteLine("              \"durations\" : [");

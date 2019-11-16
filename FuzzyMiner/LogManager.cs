@@ -16,12 +16,21 @@ namespace IO
             FuzzyModel fm = new FuzzyModel();
             List<XTrace> traces = getTracesXES(file);
 
-            string root = "start";
+            string root = "start_node";
+            string end = "end_node";
             fm.AddNode(root);
 
             foreach (XTrace xt in traces)
             {
                 fm.GetNode(root).IncreaseFrequencySignificance();
+                var xamTrace = xt.GetAttributes();
+                foreach (string key in xamTrace.Keys)
+                {
+                    if (key != "concept:name")
+                    {
+                        fm.GetNode(root).AddSignificantAttribute(key, xamTrace[key].ToString());
+                    }
+                }
                 string previousEvent = root;
                 string previousState = "";
                 double eventDuration = 0;
@@ -37,15 +46,8 @@ namespace IO
                     {
                         currentTime = Convert.ToDateTime(xam["time:timestamp"].ToString()).ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
                     }
-                    //if (xam.Keys.Contains<string>("lifecycle:transition"))
-                    //{
-                    //    currentEvent = xam["concept:name"].ToString() + " : " + xam["lifecycle:transition"].ToString();
-                    //}
-                    //else
-                    //{
-                        currentEvent = xam["concept:name"].ToString();
-                    //}
-
+                    currentEvent = xam["concept:name"].ToString();
+                    
                     // if the event is new, add it to the graph
                     if (!fm.GetEvents().Contains(currentEvent))
                     {
@@ -62,7 +64,7 @@ namespace IO
                                 fm.AddEdge(e);
                             }  
                             // if it's not the start node, compute the duration of the transition
-                            if (previousEvent != "start")
+                            if (previousEvent != "start_node")
                             {
                                 fm.GetEdge(e).AddDuration(currentTime - previousTime);
                             }
@@ -82,7 +84,7 @@ namespace IO
                                 fm.AddEdge(e);
                             }
                             // if it's not the start node, compute the duration of the transition
-                            if (previousEvent != "start")
+                            if (previousEvent != "start_node")
                             {
                                 fm.GetEdge(e).AddDuration(currentTime - previousTime);
                             }
@@ -121,6 +123,25 @@ namespace IO
                     previousTime = currentTime;
                 }
                 //TODO Add end node
+                if (!fm.GetEvents().Contains(end))
+                {
+                    fm.AddNode(end);
+                    fm.GetNode(end).IncreaseFrequencySignificance();
+                }
+                else
+                {
+                    fm.GetNode(end).IncreaseFrequencySignificance();
+                }
+                FuzzyEdge fe = new FuzzyEdge(fm.GetNode(previousEvent), fm.GetNode(end));
+                if (!fm.GetEdges().Contains(fe))
+                {
+                    fm.AddEdge(fe);
+                    fm.GetEdge(fe).IncreaseFrequencySignificance();
+                }
+                else
+                {
+                    fm.GetEdge(fe).IncreaseFrequencySignificance();
+                }
             }
             return fm;
         }
