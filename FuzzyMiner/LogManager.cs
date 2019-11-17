@@ -34,6 +34,7 @@ namespace IO
                 string previousEvent = root;
                 string previousState = "";
                 double eventDuration = 0;
+                double traceDuration = 0;
                 double previousTime = 0;
                 foreach (XEvent xe in xt)
                 {
@@ -67,6 +68,7 @@ namespace IO
                             if (previousEvent != "start_node")
                             {
                                 fm.GetEdge(e).AddDuration(currentTime - previousTime);
+                                traceDuration += currentTime - previousTime;
                             }
                             fm.GetEdge(e).IncreaseFrequencySignificance();
                         }
@@ -87,6 +89,7 @@ namespace IO
                             if (previousEvent != "start_node")
                             {
                                 fm.GetEdge(e).AddDuration(currentTime - previousTime);
+                                traceDuration += currentTime - previousTime;
                             }
                             fm.GetEdge(e).IncreaseFrequencySignificance();
                         }
@@ -104,6 +107,7 @@ namespace IO
                     if (currentState == "complete")
                     {
                         fm.GetNode(currentEvent).AddDuration(eventDuration);
+                        traceDuration += eventDuration;
                         eventDuration = 0;
                     }
                     // add the event attributes to the node
@@ -122,7 +126,6 @@ namespace IO
                     previousState = currentState;
                     previousTime = currentTime;
                 }
-                //TODO Add end node
                 if (!fm.GetEvents().Contains(end))
                 {
                     fm.AddNode(end);
@@ -142,6 +145,8 @@ namespace IO
                 {
                     fm.GetEdge(fe).IncreaseFrequencySignificance();
                 }
+
+                fm.GetNode(root).AddDuration(traceDuration);
             }
             return fm;
         }

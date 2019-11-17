@@ -34,13 +34,14 @@ namespace IO
                         sw.WriteLine("           {");
                         sw.WriteLine("              \"label\" : \"" + fn.GetLabel() + "\",");
                         sw.WriteLine("              \"frequencySignificance\" : " + fn.GetFrequencySignificance() + ",");
-                        if (fn.GetLabel() != "start_node" && fn.GetLabel() != "end_node")
+                        if (fn.GetLabel() != "end_node")
                         {
                             sw.WriteLine("              \"durations\" : [");
                             sw.WriteLine("                  {");
                             Dictionary<string, double> durations = ComputeDurations(fn);
                             sw.WriteLine("                      \"TotalDuration\" : " + durations["TotalDuration"].ToString().Replace(",", ".") + ",");
                             sw.WriteLine("                      \"MeanDuration\" : " + durations["MeanDuration"].ToString().Replace(",", ".") + ",");
+                            sw.WriteLine("                      \"MedianDuration\" : " + durations["MedianDuration"].ToString().Replace(",", ".") + ",");
                             sw.WriteLine("                      \"MinDuration\" : " + durations["MinDuration"].ToString().Replace(",", ".") + ",");
                             sw.WriteLine("                      \"MaxDuration\" : " + durations["MaxDuration"].ToString().Replace(",", "."));
                             sw.WriteLine("                   }");
@@ -107,6 +108,7 @@ namespace IO
                             Dictionary<string, double> durations = ComputeDurations(fe);
                             sw.WriteLine("                      \"TotalDuration\" : " + durations["TotalDuration"].ToString().Replace(",",".") + ",");
                             sw.WriteLine("                      \"MeanDuration\" : " + durations["MeanDuration"].ToString().Replace(",", ".") + ",");
+                            sw.WriteLine("                      \"MedianDuration\" : " + durations["MedianDuration"].ToString().Replace(",", ".") + ",");
                             sw.WriteLine("                      \"MinDuration\" : " + durations["MinDuration"].ToString().Replace(",", ".") + ",");
                             sw.WriteLine("                      \"MaxDuration\" : " + durations["MaxDuration"].ToString().Replace(",", "."));
                             sw.WriteLine("                   }");
@@ -143,8 +145,27 @@ namespace IO
         {
             Console.WriteLine("Computing overall attribute");
             Dictionary<string, double> overallAttributes = new Dictionary<string, double>();
+            
+            if (!attribute.Equals("EventID") && !attribute.Equals("OfferID"))
+            {
+                if (!attribute.Equals("time:timestamp"))
+                {
+                    foreach (string s in attributeValues)
+                    {
+                        if (overallAttributes.Keys.Contains<string>(s))
+                        {
+                            overallAttributes[s] += 1;
+                        }
+                        else
+                        {
+                            overallAttributes.Add(s, 1);
+                        }
+                    }
+                }
+            }
+
             var isNumeric = true;
-            foreach (string s in attributeValues)
+            foreach (string s in overallAttributes.Keys)
             {
                 if (!double.TryParse(s, out double n))
                 {
@@ -152,37 +173,18 @@ namespace IO
                     break;
                 }
             }
-            
-            if (isNumeric)
+
+            if (isNumeric && overallAttributes.Count > 70)
             {
                 double totalValue = 0;
-                foreach (string s in attributeValues)
+                foreach (string s in overallAttributes.Keys)
                 {
-                    totalValue += Convert.ToDouble(s);
+                    totalValue += Convert.ToDouble(s) * overallAttributes[s];
                 }
                 double meanValue = totalValue / attributeValues.Count;
+                overallAttributes = new Dictionary<string, double>();
                 overallAttributes.Add("Total", totalValue);
                 overallAttributes.Add("Arithmetic_Mean", meanValue);
-            }
-            else
-            {
-                if (!attribute.Equals("EventID") && !attribute.Equals("OfferID"))
-                {
-                    if (!attribute.Equals("time:timestamp"))
-                    {
-                        foreach (string s in attributeValues)
-                        {
-                            if (overallAttributes.Keys.Contains<string>(s))
-                            {
-                                overallAttributes[s] += 1;
-                            }
-                            else
-                            {
-                                overallAttributes.Add(s, 1);
-                            }
-                        }
-                    }
-                }
             }
             Console.WriteLine("Returning overall attribute");
             return overallAttributes;
@@ -198,11 +200,25 @@ namespace IO
                 totalDuration += f;
             }
             double meanDuration = totalDuration / edgeDurations.Count;
-            double minDuration = edgeDurations.Min();
-            double maxDuration = edgeDurations.Max();
+
+            edgeDurations.Sort();
+            double minDuration = edgeDurations[0];
+            double maxDuration = edgeDurations[edgeDurations.Count - 1];
+
+            int m = edgeDurations.Count / 2;
+            double medianDuration = 0;
+            if (edgeDurations.Count % 2 != 0)
+            {
+                medianDuration = edgeDurations[m];
+            }
+            else
+            {
+                medianDuration = (edgeDurations[m] + edgeDurations[m + 1]) / 2;
+            }
 
             durations.Add("TotalDuration", totalDuration);
             durations.Add("MeanDuration", meanDuration);
+            durations.Add("MedianDuration", medianDuration);
             durations.Add("MinDuration", minDuration);
             durations.Add("MaxDuration", maxDuration);
 
@@ -221,11 +237,25 @@ namespace IO
                     totalDuration += f;
                 }
                 double meanDuration = totalDuration / nodeDurations.Count;
-                double minDuration = nodeDurations.Min();
-                double maxDuration = nodeDurations.Max();
+
+                nodeDurations.Sort();
+                double minDuration = nodeDurations[0];
+                double maxDuration = nodeDurations[nodeDurations.Count - 1];
+
+                int m = nodeDurations.Count / 2;
+                double medianDuration = 0;
+                if (nodeDurations.Count % 2 != 0)
+                {
+                    medianDuration = nodeDurations[m];
+                }
+                else
+                {
+                    medianDuration = (nodeDurations[m] + nodeDurations[m + 1]) / 2;
+                }
 
                 durations.Add("TotalDuration", totalDuration);
                 durations.Add("MeanDuration", meanDuration);
+                durations.Add("MedianDuration", medianDuration);
                 durations.Add("MinDuration", minDuration);
                 durations.Add("MaxDuration", maxDuration);
             }
@@ -233,6 +263,7 @@ namespace IO
             {
                 durations.Add("TotalDuration", 0);
                 durations.Add("MeanDuration", 0);
+                durations.Add("MedianDuration", 0);
                 durations.Add("MinDuration", 0);
                 durations.Add("MaxDuration", 0);
             }
