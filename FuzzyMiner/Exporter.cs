@@ -173,18 +173,46 @@ namespace IO
                     break;
                 }
             }
-
+            
             if (isNumeric && overallAttributes.Count > 70)
             {
+                List<double> numericAttributes = new List<double>();
                 double totalValue = 0;
                 foreach (string s in overallAttributes.Keys)
                 {
-                    totalValue += Convert.ToDouble(s) * overallAttributes[s];
+                    for (int i = 0; i < overallAttributes[s]; i++)
+                    {
+                        numericAttributes.Add(Convert.ToDouble(s));
+                        totalValue += Convert.ToDouble(s);
+                    }
                 }
+                numericAttributes.Sort();
+                double minValue = numericAttributes[0];
+                double maxValue = numericAttributes[numericAttributes.Count - 1];
+
+                int m = numericAttributes.Count / 2;
+                double medianValue = 0;
+                if (numericAttributes.Count % 2 != 0)
+                {
+                    medianValue = numericAttributes[m];
+                }
+                else
+                {
+                    medianValue = (numericAttributes[m] + numericAttributes[m + 1]) / 2;
+                }
+
+                //double totalValue = 0;
+                //foreach (string s in overallAttributes.Keys)
+                //{
+                //    totalValue += Convert.ToDouble(s) * overallAttributes[s];
+                //}
                 double meanValue = totalValue / attributeValues.Count;
                 overallAttributes = new Dictionary<string, double>();
                 overallAttributes.Add("Total", totalValue);
-                overallAttributes.Add("Arithmetic_Mean", meanValue);
+                overallAttributes.Add("Mean", meanValue);
+                overallAttributes.Add("Median", medianValue);
+                overallAttributes.Add("Min", minValue);
+                overallAttributes.Add("Max", maxValue);
             }
             Console.WriteLine("Returning overall attribute");
             return overallAttributes;
