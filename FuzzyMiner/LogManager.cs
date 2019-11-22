@@ -41,7 +41,11 @@ namespace IO
                     // find event name
                     XAttributeMap xam = (XAttributeMap)xe.GetAttributes();
                     string currentEvent;
-                    string currentState = xam["lifecycle:transition"].ToString();                    
+                    string currentState = "";
+                    if (xam.Keys.Contains<string>("lifecycle:transition"))
+                    {
+                        currentState = xam["lifecycle:transition"].ToString();
+                    }
                     double currentTime = 0;
                     if (xam.Keys.Contains<string>("time:timestamp"))
                     {
@@ -147,6 +151,35 @@ namespace IO
                 }
 
                 fm.GetNode(root).AddDuration(traceDuration);
+            }
+
+            foreach (XTrace xt in traces)
+            {
+                foreach (FuzzyNode fn in fm.GetNodes())
+                {
+                    foreach (XEvent xe in xt)
+                    {
+                        if (xe.GetAttributes()["concept:name"].ToString().Equals(fn.GetLabel()))
+                        {
+                            fn.IncreaseCaseFrequencySignificance();
+                            break;
+                        }
+                    }
+                }
+                foreach (FuzzyEdge fe in fm.GetEdges())
+                {
+                    string previousEvent = "";
+                    foreach (XEvent xe in xt)
+                    {
+                        string currentEvent = xe.GetAttributes()["concept:name"].ToString();
+                        if (previousEvent.Equals(fe.GetFromNode().GetLabel()) && currentEvent.Equals(fe.GetToNode().GetLabel()))
+                        {
+                            fe.IncreaseCaseFrequencySignificance();
+                            break;
+                        }
+                        previousEvent = currentEvent;
+                    }
+                }
             }
             return fm;
         }

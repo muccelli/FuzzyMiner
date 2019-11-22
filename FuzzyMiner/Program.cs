@@ -86,7 +86,7 @@ namespace FuzzyMiner
 
             // Conflict resolution
             float preserveThr = 0.5F;
-            float ratioThr = 0.15F;
+            float ratioThr = 0.01F;
             Console.WriteLine(System.Environment.NewLine + "Conflict resolution:" + System.Environment.NewLine);
             FuzzyMining.ConflictResolution(fm, preserveThr, ratioThr);
             Console.WriteLine("Number of edges: {0}", fm.GetEdges().Count);

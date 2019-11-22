@@ -162,6 +162,7 @@ namespace FuzzyMinerModel
         private List<FuzzyEdge> outEdges;
         private List<double> durationsList;
         private int frequencySignificance;
+        private int caseFrequencySignificance;
         private Dictionary<string, List<string>> attributes = new Dictionary<string, List<string>>();
         private Dictionary<string, List<string>> significantAttributes = new Dictionary<string, List<string>>();
 
@@ -202,6 +203,11 @@ namespace FuzzyMinerModel
         public int GetFrequencySignificance()
         {
             return frequencySignificance;
+        }
+
+        public int GetCaseFrequencySignificance()
+        {
+            return caseFrequencySignificance;
         }
 
         public Dictionary<string, List<string>> GetAttributes()
@@ -258,6 +264,11 @@ namespace FuzzyMinerModel
         public void IncreaseFrequencySignificance()
         {
             frequencySignificance++;
+        }
+
+        public void IncreaseCaseFrequencySignificance()
+        {
+            caseFrequencySignificance++;
         }
 
         public float ComputeRoutingSignificance()
@@ -347,6 +358,7 @@ namespace FuzzyMinerModel
         private FuzzyNode toNode;
         private List<double> durationsList;
         private int frequencySignificance;
+        private int caseFrequencySignificance;
         private float endpointCorrelation;
         private float proximityCorrelation;
         private float originatorCorrelation;
@@ -392,6 +404,11 @@ namespace FuzzyMinerModel
             return frequencySignificance;
         }
 
+        public int GetCaseFrequencySignificance()
+        {
+            return caseFrequencySignificance;
+        }
+
         public float GetEndpointCorrelation()
         {
             return endpointCorrelation;
@@ -410,6 +427,11 @@ namespace FuzzyMinerModel
         public void IncreaseFrequencySignificance()
         {
             frequencySignificance++;
+        }
+
+        public void IncreaseCaseFrequencySignificance()
+        {
+            caseFrequencySignificance++;
         }
 
         public float ComputeDistanceSignificance()

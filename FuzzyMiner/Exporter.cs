@@ -34,6 +34,7 @@ namespace IO
                         sw.WriteLine("           {");
                         sw.WriteLine("              \"label\" : \"" + fn.GetLabel() + "\",");
                         sw.WriteLine("              \"frequencySignificance\" : " + fn.GetFrequencySignificance() + ",");
+                        sw.WriteLine("              \"caseFrequencySignificance\" : " + fn.GetCaseFrequencySignificance() + ",");
                         if (fn.GetLabel() != "end_node")
                         {
                             sw.WriteLine("              \"durations\" : [");
@@ -103,6 +104,7 @@ namespace IO
                         if (fe.GetFromNode().GetLabel() != "start_node" && fe.GetToNode().GetLabel() != "end_node")
                         {
                             sw.WriteLine("              \"frequencySignificance\" : " + fe.GetFrequencySignificance() + ",");
+                            sw.WriteLine("              \"caseFrequencySignificance\" : " + fe.GetCaseFrequencySignificance() + ",");
                             sw.WriteLine("              \"durations\" : [");
                             sw.WriteLine("                  {");
                             Dictionary<string, double> durations = ComputeDurations(fe);
@@ -143,7 +145,6 @@ namespace IO
 
         public static Dictionary<string, double> ComputeOverallAttribute(string attribute, List<string> attributeValues)
         {
-            Console.WriteLine("Computing overall attribute");
             Dictionary<string, double> overallAttributes = new Dictionary<string, double>();
             
             if (!attribute.Equals("EventID") && !attribute.Equals("OfferID"))
@@ -214,7 +215,6 @@ namespace IO
                 overallAttributes.Add("Min", minValue);
                 overallAttributes.Add("Max", maxValue);
             }
-            Console.WriteLine("Returning overall attribute");
             return overallAttributes;
         }
 
@@ -222,34 +222,44 @@ namespace IO
         {
             Dictionary<string, double> durations = new Dictionary<string, double>();
             List<double> edgeDurations = fe.GetDurationsList();
-            double totalDuration = 0;
-            foreach (double f in edgeDurations)
+            if (edgeDurations.Count > 0)
             {
-                totalDuration += f;
-            }
-            double meanDuration = totalDuration / edgeDurations.Count;
+                double totalDuration = 0;
+                foreach (double f in edgeDurations)
+                {
+                    totalDuration += f;
+                }
+                double meanDuration = totalDuration / edgeDurations.Count;
 
-            edgeDurations.Sort();
-            double minDuration = edgeDurations[0];
-            double maxDuration = edgeDurations[edgeDurations.Count - 1];
+                edgeDurations.Sort();
+                double minDuration = edgeDurations[0];
+                double maxDuration = edgeDurations[edgeDurations.Count - 1];
 
-            int m = edgeDurations.Count / 2;
-            double medianDuration = 0;
-            if (edgeDurations.Count % 2 != 0)
-            {
-                medianDuration = edgeDurations[m];
+                int m = edgeDurations.Count / 2;
+                double medianDuration = 0;
+                if (edgeDurations.Count % 2 != 0)
+                {
+                    medianDuration = edgeDurations[m];
+                }
+                else
+                {
+                    medianDuration = (edgeDurations[m] + edgeDurations[m - 1]) / 2;
+                }
+
+                durations.Add("TotalDuration", totalDuration);
+                durations.Add("MeanDuration", meanDuration);
+                durations.Add("MedianDuration", medianDuration);
+                durations.Add("MinDuration", minDuration);
+                durations.Add("MaxDuration", maxDuration);
             }
             else
             {
-                medianDuration = (edgeDurations[m] + edgeDurations[m + 1]) / 2;
+                durations.Add("TotalDuration", 0);
+                durations.Add("MeanDuration", 0);
+                durations.Add("MedianDuration", 0);
+                durations.Add("MinDuration", 0);
+                durations.Add("MaxDuration", 0);
             }
-
-            durations.Add("TotalDuration", totalDuration);
-            durations.Add("MeanDuration", meanDuration);
-            durations.Add("MedianDuration", medianDuration);
-            durations.Add("MinDuration", minDuration);
-            durations.Add("MaxDuration", maxDuration);
-
             return durations;
         }
 
