@@ -105,8 +105,11 @@ namespace FuzzyMiningAlgorithm
                 {
                     foreach (FuzzyEdge fe in fn.GetInEdges())
                     {
-                        float utility = utilityRatio * fe.GetFrequencySignificance();
-                        utilValues.Add(fe, utility);
+                        if (fe.GetFromNode().GetLabel() != "start_node")
+                        {
+                            float utility = utilityRatio * fe.GetFrequencySignificance();
+                            utilValues.Add(fe, utility);
+                        }
                     }
 
                     Console.WriteLine("Edges to {0}", fn.GetLabel());
@@ -148,8 +151,11 @@ namespace FuzzyMiningAlgorithm
                 {
                     foreach (FuzzyEdge fe in fn.GetOutEdges())
                     {
-                        float utility = utilityRatio * fe.GetFrequencySignificance();
-                        utilValues.Add(fe, utility);
+                        if (fe.GetToNode().GetLabel() != "end_node")
+                        {
+                            float utility = utilityRatio * fe.GetFrequencySignificance();
+                            utilValues.Add(fe, utility);
+                        }
                     }
 
                     Console.WriteLine("Edges from {0}", fn.GetLabel());

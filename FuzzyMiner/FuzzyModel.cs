@@ -13,7 +13,6 @@ namespace FuzzyMinerModel
         private Dictionary<string, FuzzyNode> eventToNode;
         private List<FuzzyEdge> edges;
         private List<FuzzyNodeCluster> clusters;
-        private List<double> durationsList;
 
         public FuzzyModel()
         {

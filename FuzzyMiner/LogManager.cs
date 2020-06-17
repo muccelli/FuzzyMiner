@@ -100,6 +100,10 @@ namespace IO
                         // if the event is the same but the state is different, compute the event duration
                         if (previousEvent == currentEvent && previousState != currentState)
                         {
+                            if (previousState == "complete" && currentState == "start")
+                            {
+                                fm.GetNode(currentEvent).IncreaseFrequencySignificance();
+                            }
                             eventDuration += currentTime - previousTime;
                         }
                         else

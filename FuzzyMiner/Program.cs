@@ -86,14 +86,14 @@ namespace FuzzyMiner
 
             // Conflict resolution
             float preserveThr = 0.5F;
-            float ratioThr = 0.01F;
+            float ratioThr = 0.15F;
             Console.WriteLine(System.Environment.NewLine + "Conflict resolution:" + System.Environment.NewLine);
             FuzzyMining.ConflictResolution(fm, preserveThr, ratioThr);
             Console.WriteLine("Number of edges: {0}", fm.GetEdges().Count);
             Console.WriteLine("Number of nodes: {0}", fm.GetNodes().Count);
 
             // Edge filtering
-            float edgeCutoff = 0.5F;
+            float edgeCutoff = 0.7F;
             Console.WriteLine(System.Environment.NewLine + "Edge filtering:" + System.Environment.NewLine);
             FuzzyMining.EdgeFiltering(fm, edgeCutoff);
             Console.WriteLine("Number of edges: {0}", fm.GetEdges().Count);
